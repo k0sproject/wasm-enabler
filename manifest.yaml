@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: wasm-enabler
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      k0s-app: wasm-enabler
+  template:
+    metadata:
+      labels:
+        k0s-app: wasm-enabler
+    spec:
+      containers:
+        - name: wasm-enabler
+          image: docker.io/soider/wasm-enabler:latest
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: bin
+              mountPath: /var/lib/k0s/bin
+            - name: imports
+              mountPath: /etc/k0s/containerd_imports/
+      volumes:
+        - name: bin
+          hostPath:
+            path: /var/lib/k0s/bin
+            type: Directory
+        - name: imports
+          hostPath:
+            path: /etc/k0s/containerd_imports/
+            type: Directory
