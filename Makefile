@@ -1,5 +1,5 @@
 VERSION ?= latest
-IMAGE ?= docker.io/soider/wasm-enabler
+IMAGE ?= wasm-enabler
 
 build:
 	docker build -t $(IMAGE):$(VERSION) .

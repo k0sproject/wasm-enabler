@@ -12,11 +12,23 @@ spec:
       labels:
         k0s-app: wasm-enabler
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: plugin.k0sproject.io/wasm-enabled
+                    operator: DoesNotExist
       containers:
         - name: wasm-enabler
-          image: docker.io/soider/wasm-enabler:latest
+          image: ghcr.io/k0sproject/wasm-enabler:latest
           securityContext:
             privileged: true
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
           volumeMounts:
             - name: bin
               mountPath: /var/lib/k0s/bin
