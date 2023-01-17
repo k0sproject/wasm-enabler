@@ -11,5 +11,5 @@ cp /artifacts/containerd.toml ${IMPORTS_DIR}/wasm_runtime.toml
 
 kubectl label nodes "${NODE_NAME}" plugin.k0sproject.io/wasm-enabled=true
 
-echo "Blocking pod, sleep"
-tail -f /dev/null
+# Very dirty hack to restart k0s service. The k0s must be started by the init system for this to work.
+kill $(pidof k0s)
