@@ -12,16 +12,21 @@ spec:
       labels:
         k0s-app: wasm-enabler
     spec:
-      containers:
+      initContainers:
         - name: wasm-enabler
-          image: docker.io/soider/wasm-enabler:latest
+          image: quay.io/k0sproject/k0s-wasm-plugin:main
           securityContext:
             privileged: true
           volumeMounts:
             - name: bin
               mountPath: /var/lib/k0s/bin
             - name: imports
-              mountPath: /etc/k0s/containerd_imports/
+              mountPath: /etc/k0s/containerd.d/
+      containers:
+        # We need one dummy container as DaemonSet do not allow to
+        # run pods with restartPolicy other than Always ¯\_(ツ)_/¯
+        - name: dummy
+          image: registry.k8s.io/pause:3.6
       volumes:
         - name: bin
           hostPath:
@@ -29,5 +34,11 @@ spec:
             type: Directory
         - name: imports
           hostPath:
-            path: /etc/k0s/containerd_imports/
+            path: /etc/k0s/containerd.d/
             type: Directory
+---
+apiVersion: node.k8s.io/v1
+kind: RuntimeClass
+metadata:
+  name: wasmtime-spin
+handler: spin
