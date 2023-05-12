@@ -12,9 +12,21 @@ spec:
       labels:
         k0s-app: wasm-enabler
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: plugin.k0sproject.io/wasm-enabled
+                    operator: DoesNotExist
       initContainers:
         - name: wasm-enabler
           image: quay.io/k0sproject/k0s-wasm-plugin:main
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
           securityContext:
             privileged: true
           volumeMounts:
